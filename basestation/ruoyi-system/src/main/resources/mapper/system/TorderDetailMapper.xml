@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TorderDetailMapper">
+    
+    <resultMap type="TorderDetail" id="TorderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="disheId"    column="dishe_id"    />
+        <result property="name"    column="name"    />
+        <result property="price"    column="price"    />
+        <result property="number"    column="number"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTorderDetailVo">
+        select id, order_id, dishe_id, name, price, number, create_time from t_order_detail
+    </sql>
+
+    <select id="selectTorderDetailList" parameterType="TorderDetail" resultMap="TorderDetailResult">
+        <include refid="selectTorderDetailVo"/>
+        <where>  
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="disheId != null "> and dishe_id = #{disheId}</if>
+            <if test="number != null "> and number = #{number}</if>
+        </where>
+    </select>
+    
+    <select id="selectTorderDetailById" parameterType="Integer" resultMap="TorderDetailResult">
+        <include refid="selectTorderDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTorderDetail" parameterType="TorderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into t_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="disheId != null">dishe_id,</if>
+            <if test="name != null">name,</if>
+            <if test="price != null">price,</if>
+            <if test="number != null">number,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="disheId != null">#{disheId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="price != null">#{price},</if>
+            <if test="number != null">#{number},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTorderDetail" parameterType="TorderDetail">
+        update t_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="disheId != null">dishe_id = #{disheId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTorderDetailById" parameterType="Integer">
+        delete from t_order_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteTorderDetailByIds" parameterType="String">
+        delete from t_order_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getListByOrderId" parameterType="java.lang.Integer"
+            resultType="com.ruoyi.system.domain.vo.TorderDetailVo">
+        select de.id, de.order_id, de.dishe_id, de.name, de.price, de.number, de.create_time,
+        ta.`name` as disheName
+        from t_order_detail de LEFT JOIN t_category ta on de.dishe_id = ta.id
+        WHERE de.order_id  = #{orderId}
+    </select>
+
+</mapper>

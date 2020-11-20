@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TdishesMapper">
+    
+    <resultMap type="Tdishes" id="TdishesResult">
+        <result property="id"    column="id"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="name"    column="name"    />
+        <result property="descp"    column="descp"    />
+        <result property="price"    column="price"    />
+        <result property="image"    column="image"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTdishesVo">
+        select id, category_id, name, descp, price, image, status, create_time from t_dishes
+    </sql>
+
+    <select id="selectTdishesList" parameterType="Tdishes" resultMap="TdishesResult">
+        <include refid="selectTdishesVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="categoryId != null">and category_id = #{categoryId}</if>
+        </where>
+    </select>
+    
+    <select id="selectTdishesById" parameterType="Integer" resultMap="TdishesResult">
+        <include refid="selectTdishesVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTdishes" parameterType="Tdishes" useGeneratedKeys="true" keyProperty="id">
+        insert into t_dishes
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">category_id,</if>
+            <if test="name != null">name,</if>
+            <if test="descp != null">descp,</if>
+            <if test="price != null">price,</if>
+            <if test="image != null">image,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="descp != null">#{descp},</if>
+            <if test="price != null">#{price},</if>
+            <if test="image != null">#{image},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTdishes" parameterType="Tdishes">
+        update t_dishes
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="descp != null">descp = #{descp},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTdishesById" parameterType="Integer">
+        delete from t_dishes where id = #{id}
+    </delete>
+
+    <delete id="deleteTdishesByIds" parameterType="String">
+        delete from t_dishes where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="updateDisheStatus" parameterType="java.lang.Integer">
+        update t_dishes d set  d.`status` = #{status} where d.id = #{id}
+    </update>
+
+
+
+    <select id="selectDishesListByIds" parameterType="String" resultMap="TdishesResult">
+        <include refid="selectTdishesVo"/>
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

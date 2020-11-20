@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TableEntityMapper">
+    
+    <resultMap type="TableEntity" id="TableEntityResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="num"    column="num"    />
+        <result property="remark"    column="remark"    />
+        <result property="bearPeople"    column="bear_people"    />
+    </resultMap>
+
+    <sql id="selectTableEntityVo">
+        select id, name, num, remark, bear_people from t_table
+    </sql>
+
+    <select id="selectTableEntityList" parameterType="TableEntity" resultMap="TableEntityResult">
+        <include refid="selectTableEntityVo"/>
+        <where>  
+            <if test="num != null  and num != ''"> and num = #{num}</if>
+            <if test="bearPeople != null "> and bear_people = #{bearPeople}</if>
+        </where>
+    </select>
+    
+    <select id="selectTableEntityById" parameterType="Long" resultMap="TableEntityResult">
+        <include refid="selectTableEntityVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTableEntity" parameterType="TableEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into t_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="num != null">num,</if>
+            <if test="remark != null">remark,</if>
+            <if test="bearPeople != null">bear_people,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="num != null">#{num},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="bearPeople != null">#{bearPeople},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTableEntity" parameterType="TableEntity">
+        update t_table
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="bearPeople != null">bear_people = #{bearPeople},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTableEntityById" parameterType="Long">
+        delete from t_table where id = #{id}
+    </delete>
+
+    <delete id="deleteTableEntityByIds" parameterType="String">
+        delete from t_table where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getTableEntityByNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_table WHERE num = #{num}
+    </select>
+    
+</mapper>
